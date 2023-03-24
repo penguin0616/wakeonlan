@@ -78,12 +78,12 @@ void sendWakeUpToTarget(char *frame) {
 
 	if ((he = gethostbyname(BROADCAST_IP)) == NULL) { // get the host info
 		perror("gethostbyname");
-		goto generic_fail;
-	}
+        return;
+    }
 
 	if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
 		perror("socket");
-		goto generic_fail;
+		return;
 	}
 
 	// this call is what allows broadcast packets to be sent:
@@ -103,15 +103,12 @@ void sendWakeUpToTarget(char *frame) {
 	}
 
 	printf("sent %d bytes to %s\n", numbytes, inet_ntoa(their_addr.sin_addr));
-	close(sockfd);
 
 	sendWakeUptoTarget_socketfail:
 		close(sockfd);
-		goto generic_fail;
-
-	generic_fail:
-		free(frame);
-		exit(1);
+		sockfd = -1;
+	
+	return;
 }
 
 int main(int argc, char *argv[]) {
